@@ -16,86 +16,62 @@ class QuizQuestion extends React.Component {
   }
 }
 
-class TitlePage extends React.Component {
+class TitlePage extends React.Component  {
   constructor(props) {
     super(props)
-    this.state = {
-      score: 0,
-      titleText: "Welcome to our Quiz!",
-      counter: 0,
+      this.state = {titleText: "Welcome to our Quiz",
       currentState: TITLE_STATE,
-      currentQuestion: 0
-    }
-    this.timeLimit = TIME_LIMIT
+      counter: 0,
+      currentQuestion: 0}
+      this.counter = 0
+      this.timeLimit = TIME_LIMIT
   }
-  nextQuestion(correct) {
-    console.log("BUTTON PRESSED")
-    if(correct) {
-      this.setState({score: this.state.score+1})
-    }
-    if(this.state.currentQuestion == questions.length - 1) {
-      console.log("DONE")
-    } else {
+  nextQuestion()  {
     clearInterval(this.timer)
-    console.log(this.state.currentQuestion)
     this.setState({
-      titleText: "You answered x",
-      currentState: QUESTION_STATE,
-      currentQuestion: this.state.currentQuestion + 1
+      titleText:"you answered early!!!",
+      currentState: TITLE_STATE
     })
   }
-  }
-  countdown() {
-    console.log("Handling Interval")
-    console.log(this.state.counter)
-    if(this.state.counter < this.timeLimit) {
-      this.setState({
-        titleText: `Starting the Quiz`,
-        counter: this.state.counter + 1
-      })
-    } else {
-      this.setState({
-        titleText: "Beginning Quiz!",
-        currentState: QUESTION_STATE,
-        counter: 0
-      })
-      if(this.state.currentState === TITLE_STATE) {
-        this.timer = setInterval(() => this.countdown(), 1000)
-        clearInterval(this.timer)
-      } else {
-        this.setState({titleText: "You Answered!"})
-      }
-    }
-  }
-  start() {
-    console.log("Starting!")
-    this.setState({titleText: "Starting the Quiz!", counter: 0})
-    this.timer = setInterval(() => this.countdown(), 1000)
-  }
 
-  render() {
-    return (
-      <>
-      <p>${this.timeLimit - this.state.counter}</p>
-      {((this.state.currentState === TITLE_STATE) ?
-      <>
-      <h2>{this.state.titleText}</h2>
-      <input className="start" type="button" value="start" onClick={()=>this.start()} />
-      </>
-      :
-      <QuizQuestion answers={questions[this.state.currentQuestion].possibleAnswers} question ={questions[this.state.currentQuestion].question} nextQuestion={(correct) => this.nextQuestion(correct)}>
-      </QuizQuestion>)}
-      <p>Score: {this.state.score}</p>)}
-      </>)
-  }
+  start() {
+    console.log("starting")
+    this.setState({counter:0})
+    this.setState({currentState: QUESTION_STATE})
+
+    this.timer = setInterval(() => {
+      console.log("Interval Called")
+      this.setState({counter : this.state.counter+1})
+      if(this.state.counter < this.timeLimit) {
+      this.setState({ titleText: "Begin the quez! " + this.state.counter})
+      } else {
+        this.setState({titleText: "times up!"})
+        clearInterval(this.timer)
+      }
+  }, 1000);
 }
 
-function App() {
+  render(props){
+    console.log("RENDER CALLED")
+    return (
+      <div className='App'>
+        <div>{this.timeLimit - this.state.counter}</div>
+        {(this.state.currentState === QUESTION_STATE) ?
+        <QuizQuestion answers={questions[this.state.currentQuestion].possibleAnswers}
+          question={questions[this.state.currentQuestion].question}
+          nextQuestion={() => this.nextQuestion()} />
+          :
+          <h1 className='title'>{this.state.titleText}</h1>}
+          <input id='startButton' type="button" value="Start" onClick={() => this.start()}></input>  
+        </div>
+      )
+    }
+  }
+
+function App()  {
   return (
-    <div className="App">
-      <TitlePage></TitlePage>
-    </div>
-  );
+      <TitlePage/>
+    )
 }
 
 export default App;
